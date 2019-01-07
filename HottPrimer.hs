@@ -1,15 +1,18 @@
-{-# LANGUAGE TypeOperators   #-}
+{-# Language TypeOperators   #-}
 {-# LANGUAGE LambdaCase      #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE UnicodeSyntax   #-}
 {-# LANGUAGE RecordWildCards #-}
+
+{-# OPTIONS_GHC -F -pgmF ./preProcessor.sh  #-}
+
 
 module HottPrimer where
 
 ----------------------------
 --------  PREAMBLE  --------
 ----------------------------
-infixr 8 :+:
+infixr 7 :+:
 type (a :+: b) = Either a b
 
 pattern Inl a = Left  a
@@ -18,17 +21,16 @@ inl = Left
 inr = Right
 
 infixr 8 :*:
-type a :*: b = (a,b)
+type a :*: b = (a , b)
 
 pr1 = \(a , _) -> a
 pr2 = \(_ , b) -> b
 
 data Z
 
-infixr 8 ¬
-type (¬) a = a -> Z
+type ¬ a = a -> Z
 
-infixr 7 ⊣⊢
+infixr 6 ⊣⊢
 data p ⊣⊢ q =
   BiImplication
   { to   :: p -> q
@@ -137,4 +139,13 @@ theorem13 = flip
 theorem14 :: (a -> (b -> c)) -> ((a -> b) -> (a -> c))
 theorem14 g f a = g a (f a)
 
-  
+
+
+theorem ::  ¬ (a :+: b)  ->   ¬ a :*:  ¬ b
+theorem g =
+  let
+    p = \a -> g . inl $ a
+    q = \b -> g . inr $ b
+  in
+    (p, q)
+
